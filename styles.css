@@ -29,6 +29,7 @@ body {
   }
   
   .card {
+    text-align: center;
     border: 1px solid #ddd;
     margin: 10px;
     padding: 15px;
@@ -41,16 +42,19 @@ body {
     display :flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    border-color: black;
   }
   .image-container {
     text-align: center; /* Center the image */
-  }
-  
-  .image-container img {
-    max-width: 100%; 
-    height: auto;  /* Maintain aspect ratio */
-    border-radius: 50%; /* Circular image, adjust as needed */
-  } 
+    width: 300px;      /* Set the container width */
+    height: 300px;     /* Set the container height */
+    overflow: auto;  /* Hide any overflow of the image */
+}
+
+.image-container img {
+    width: 100%;       /* Force the image to fill the width of its container */
+    height: 100%;       /* Force the image to fill the height of its container */
+} 
   
   footer {
     text-align: center;
@@ -67,10 +71,23 @@ body {
     justify-content: center;
     padding: 10px;
     border: 5px solid black;
-    width: 200px;
+    width: 500px;
     margin: 50px auto;
+    background-color: bisque;
   }
   
+  .submitBtn {
+    background-color:bisque;
+    width: 300px;
+    height: 50px;
+  }
+
+  .input { 
+    width: 300px;
+    height: 50px;
+    text-align: center;
+  }
+
   label {
   font-size: 30px;
   font-weight: bold;
