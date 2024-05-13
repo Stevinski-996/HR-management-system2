@@ -1,41 +1,22 @@
-'use strict'
-// Declaring Arrays
-let department = ["Administration", "Marketing", "Development", "Finance"];
-let level = ["Junior", "Mid-Senior", "Senior"];
-let allEmployees = [];
-console.log(allEmployees);
+// 'use strict'
+// // Declaring Arrays
+// let department = ["Administration", "Marketing", "Development", "Finance"];
+// let level = ["Junior", "Mid-Senior", "Senior"];
+let min;
+let max;
+let employees = [];
 
 // Employee Constructor
-function Employee(name, department, level, url, salary) {
+function Employee(fullName, department, level, imageUrl, salary) {
     this.employeeID = generateEmployeeId(); // Assign generated ID
-    this.fullName = name;
+    this.fullName = fullName;
     this.department = department;
     this.level = level;
-    this.url = url;
+    this.imageUrl = imageUrl;
     this.salary = salary;
-    allEmployees.push(this);
+    employees.push(this);
 }
 
-//Part AAA - Filling Employees Data (Creating Objects)
-
-const ghazi = new Employee("Ghazi Samer","Administration","Senior","./assets/Ghazi.jpg")
-const lana = new Employee("Lana Ali","Finance","Senior","./assets/Lana.jpg")
-const tamara = new Employee("Tamara Ayoub","Marketing","Senior","./assets/Tamara.jpg")
-const safi = new Employee("Safi Walid","Administration","Mid-Senior","./assets/Safi.jpg")
-const omar = new Employee("Omar Zaid","Development","Senior","./assets/Omar.jpg")
-const rana = new Employee("Rana Saleh","Development","Junior","./assets/Rana.jpg")
-const hadi = new Employee("Hadi Ahmad","Finance","Mid-Senior","./assets/Hadi.jpg")
-
-function renderInitialEmployees() { 
-    allEmployees.forEach(employee => {
-        employee.calculateSalary(); // Calculate salaries on load
-        renderEmployeeCard(employee);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderInitialEmployees();
-});
 // Salary Calculation
 
 Employee.prototype.calculateSalary = function () {
@@ -51,7 +32,7 @@ Employee.prototype.calculateSalary = function () {
             break;
     }
     this.salary = levelSalary;
-    const netSalary = this.salary - this.salary * 0.075;
+    const netSalary = Math.floor(this.salary - this.salary * 0.075);
     return (this.salary = netSalary);// further explanation
 }
 function getRandomSalary(min, max) {
@@ -60,7 +41,6 @@ function getRandomSalary(min, max) {
     let result = Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
     return result;
 }
-
 
 // Unique ID Generation
 function generateEmployeeId() {
@@ -75,8 +55,8 @@ function generateEmployeeId() {
         unique = true; // Assume it's unique initially  
 
         // Check against existing employees using a for loop:
-        for (let i = 0; i < allEmployees.length; i++) {
-            if (allEmployees[i].employeeID === generatedId) {
+        for (let i = 0; i < employees.length; i++) {
+            if (employees[i].employeeID === generatedId) {
                 unique = false; // Duplicate found!
                 break; // Exit the for loop early
             }
@@ -86,23 +66,41 @@ function generateEmployeeId() {
     return generatedId;
 }
 
+// Function to save employees to Local Storage
+function saveEmployeesToLocalStorage() {
+    localStorage.setItem('employees', JSON.stringify(employees));
+}
+
+// Function to load employees from Local Storage
+function loadEmployeesFromLocalStorage() {
+    let storedEmployees = localStorage.getItem('employees');
+    if (storedEmployees) {
+        employees = JSON.parse(storedEmployees).map(employee => new Employee( employee.fullName, employee.department, employee.level, employee.imageUrl));
+    }
+}
 
 // Form Handling 
-let formElement = document.getElementById("form");
+let formElement = document.getElementById("fillingForm");
 
-formElement.addEventListener("submit", (event) => {
+formElement.addEventListener("submit", handleForm);
+    function handleForm(event){
     event.preventDefault(); // Prevent default page reload
-    console.log(event.target); // further explanation 
-    let fname = document.getElementById("fname").value;
+    let fname = document.getElementById("fName").value;
     let department = document.getElementById("department").value;
     let level = document.getElementById("level").value;
-    let imageUrl = document.getElementById("image").value;
-    const newEmployee = new Employee(fname, department, level, imageUrl);
-    newEmployee.calculateSalary();
-    renderEmployeeCard(newEmployee); // Render the card 
-})
+    let image = document.getElementById("image").value;
+    const salary = Employee.prototype.calculateSalary();
+    const employee = new Employee( fname, department, level, image,salary);
+    // employee.generateEmployeeId();
+    // employee.calculateSalary();
+    // employees.push(employee);
+    saveEmployeesToLocalStorage();
+    renderEmployeeCard(employee); // Render the card 
+}
 
 function renderEmployeeCard(employee) {
+    const cardContainer = document.getElementById("employeeCards"); // Get the container
+
     const card = document.createElement('div');
     card.classList.add('card'); // further explanation
 
@@ -110,7 +108,7 @@ function renderEmployeeCard(employee) {
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('image-container'); // further explanation
     const employeeImage = document.createElement('img');
-    employeeImage.src = employee.url;
+    employeeImage.src = employee.imageUrl;
     employeeImage.alt = employee.fullName;
     imageContainer.appendChild(employeeImage);
 
@@ -129,10 +127,40 @@ function renderEmployeeCard(employee) {
     card.appendChild(infoContainer);
 
     // Append card to the DOM
-    document.getElementById("employeeCards").appendChild(card);}
+    cardContainer.appendChild(card);
+}
 
-// Notes :
-// Constructor Object gets its values (Parameters) from linked Objects 
-// Methods (Functions) give value to the objects through the prototype function exist in constructor 
-// it has to be prototype function so it doesnt consume process power or memory unneeded (DRY)
-// "this" a very strong method that update the constructor with new Key,Property
+//Part AAA - Filling Employees Data (Creating Objects)
+ employees = [
+    new Employee("Ghazi Samer","Administration","Senior","./assets/Ghazi.jpg"),
+    new Employee("Lana Ali","Finance","Senior","./assets/Lana.jpg"),
+    new Employee("Tamara Ayoub","Marketing","Senior","./assets/Tamara.jpg"),
+    new Employee("Safi Walid","Administration","Mid-Senior","./assets/Safi.jpg"),
+    new Employee("Omar Zaid","Development","Senior","./assets/Omar.jpg"),
+    new Employee("Rana Saleh","Development","Junior","./assets/Rana.jpg"),
+    new Employee("Hadi Ahmad","Finance","Mid-Senior","./assets/Hadi.jpg"),
+];
+
+    // Initial rendering
+    function renderInitialEmployees() { 
+        employees.forEach(employee => {
+            employee.calculateSalary(); // Calculate salaries on load
+            renderEmployeeCard(employee);
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadEmployeesFromLocalStorage(); // Load first
+        employees.forEach(employee => {
+            employee.calculateSalary();
+            renderEmployeeCard(employee);
+
+    });
+    })
+
+
+// // Notes :
+// // Constructor Object gets its values (Parameters) from linked Objects 
+// // Methods (Functions) give value to the objects through the prototype function exist in constructor 
+// // it has to be prototype function so it doesnt consume process power or memory unneeded (DRY)
+// // "this" a very strong method that update the constructor with new Key,Property
